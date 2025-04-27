@@ -7,13 +7,12 @@ const PORT = 8080;
 
 app.use(express.json());
 
-// Connect to Redis at app startup
+// Connect to Redis
 connectRedis().catch(console.error);
 
 // Movie routes
 app.use("/movies", movieRoute);
 
-// Test homepage
 app.get("/", (req, res) => {
   res.send("Welcome to the Movie Catalog Service!");
 });
