@@ -1,4 +1,5 @@
 import { getAllMovies, addMovie } from "../services/movieService.js";
+import { publisher } from "../services/redisClient.js";
 
 /* ------------------- GET request to retrieve all movies ------------------- */
 export async function getMovies(req, res) {
@@ -21,9 +22,15 @@ export async function createMovie(req, res) {
 
   try {
     const newMovie = await addMovie({ title, rating });
-    res.status(201).json(newMovie);
+    // Publish a message to Redis
+    await publisher.publish(
+      "Movie Catalog Service",
+      JSON.stringify(newMovie.title)
+    );
+
+    return res.status(201).json(newMovie);
   } catch (error) {
     console.error("Error creating movie:", error);
-    res.status(500).json({ message: "Server error creating movie." });
+    return res.status(500).json({ message: "Server error creating movie." });
   }
 }
